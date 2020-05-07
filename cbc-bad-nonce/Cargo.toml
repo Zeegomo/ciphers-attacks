@@ -1,0 +1,10 @@
+[package]
+name = "cbc-bitflip"
+version = "0.1.0"
+authors = ["Giacomo Pasini <g.pasini98@gmail.com>"]
+edition = "2018"
+
+[dependencies]
+openssl = "0.10.29"
+rand = "0.7.3"
+jacopone = { git = "https://github.com/Zeegomo/jacopone-lib" }

@@ -8,7 +8,7 @@ pub fn validate_padding(text: &[u8]) -> bool {
     let mut valid = true;
     let len = text.len();
     let last = text[len - 1];
-    //println!("len: {}, last: {}",len,last);
+
     if last as usize >= len {
         valid = false;
     } else {
@@ -59,11 +59,8 @@ pub fn encrypt_aes_cbc(text: &[u8], key: &[u8], iv: &[u8]) -> Vec<u8> {
     let mut xored;
 
     for i in 0..input.len() / 16 {
-        //println!("{}",i);
         xored = byte_xor(&input[16 * i..16 * i + 16], &last);
-        //println!("input size: {}",input.len());
         decrypter.update(&xored, &mut encrypted).unwrap();
-        //println!("encrypted: {:?}, len:{}",encrypted, encrypted.len());
 
         last.clear();
         for z in 0..16 as usize {
@@ -82,23 +79,16 @@ pub fn decrypt_aes_cbc(text: &[u8], key: &[u8], iv: &[u8]) -> Vec<u8> {
     let mut plaintext = Vec::new();
     let mut xored;
     for i in 0..text.len() / 16 {
-        //println!("{}",i);
-
         decrypter
             .update(&text[16 * i..16 * i + 16], &mut decrypted)
             .unwrap();
-        //println!("finalize error");
-        //decrypter.finalize(&mut decrypted[count..]).unwrap();
-        //decrypted = aes_ebc(&text[16*i..16*i+16],key);
+
         if i > 0 {
             xored = byte_xor(&decrypted[16..], last);
         } else {
             xored = byte_xor(&decrypted[0..16], last);
         }
-        //println!("text: {:?}",&text[16*i..16*i+16]);
-        //println!("last: {:?}",last);
-        //println!("decrypted: {:?}",decrypted);
-        //println!("xored: {:?}",xored);
+
         last = &text[16 * i..16 * i + 16];
         for z in 0..16 as usize {
             plaintext.push(xored[z]);

@@ -1,6 +1,5 @@
-use jacopone::{Function, Jacopone, Mode, Padder, Padding, Scheduler};
-use openssl::memcmp::eq;
-use openssl::symm::{decrypt, encrypt, Cipher, Crypter, Mode as OMode};
+use jacopone::{Function, Jacopone, Mode, Padding, Scheduler};
+use openssl::symm::{decrypt, encrypt, Cipher};
 use rand::prelude::*;
 use std::iter::repeat;
 

@@ -1,4 +1,4 @@
-use jacopone::{Function, Jacopone, Mode, Padder, Padding, Scheduler};
+use jacopone::{Function, Jacopone, Mode, Padding, Scheduler};
 use openssl::symm::{decrypt, encrypt, Cipher, Crypter, Mode as OMode};
 use rand::prelude::*;
 use std::iter::repeat;

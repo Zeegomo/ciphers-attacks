@@ -1,6 +1,6 @@
-use jacopone::{Function, Jacopone, Mode, Padder, Padding, Scheduler};
-use openssl::memcmp::eq;
-use openssl::symm::{decrypt, encrypt, Cipher, Crypter, Mode as OMode};
+use jacopone::{Function, Jacopone, Mode, Padding, Scheduler};
+use lazy_static::*;
+use openssl::symm::{decrypt, encrypt, Cipher};
 use rand::prelude::*;
 use std::iter::repeat;
 
@@ -56,7 +56,7 @@ pub fn decrypt_aes_ctr(text: &[u8], key: &[u8], iv: &[u8]) -> Vec<u8> {
     decrypt(cipher, key, Some(iv), text).expect("AES_128_CTR encryption error")
 }
 #[allow(dead_code)]
-fn byte_xor(byte1: &[u8], byte2: &[u8]) -> Vec<u8> {
+pub fn byte_xor(byte1: &[u8], byte2: &[u8]) -> Vec<u8> {
     byte1
         .iter()
         .zip(byte2.iter())
@@ -72,8 +72,8 @@ pub fn pad(text: &[u8], len: u8) -> Vec<u8> {
 }
 
 lazy_static! {
-    static ref SCORE: Vec<u8> = {
-        let v = vec![0; 256];
+    static ref SCORE: Vec<u32> = {
+        let mut v = vec![0; 256];
         v['a' as usize] = 8;
         v['e' as usize] = 12;
         v['h' as usize] = 6;
@@ -88,11 +88,12 @@ lazy_static! {
         v['c' as usize] = 3;
         v['u' as usize] = 3;
         v[' ' as usize] = 12;
+        v
     };
 }
 
-pub fn get_score(xor: &Vec<u8>) -> u32 {
-    let mut score = 0;
+pub fn get_score(xor: &[u8]) -> u32 {
+    let mut score: u32 = 0;
 
     for c in xor {
         score += SCORE[*c as usize];

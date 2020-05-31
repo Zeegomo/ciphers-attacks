@@ -111,3 +111,7 @@ pub fn pad(text: &[u8], len: u8) -> Vec<u8> {
     message.extend(repeat(pl as u8).take(pl as usize));
     message
 }
+#[allow(dead_code)]
+pub fn single_byte_xor(string: &[u8], key: u8) -> Vec<u8> {
+    string.iter().map(|s| s ^ key).collect()
+}

@@ -44,33 +44,31 @@ fn padding_oracle<F: FnMut(&[u8]) -> bool>(
 
 fn block_padding_oracle<F: FnMut(&[u8]) -> bool>(ciphertext: &[u8], oracle: &mut F) -> Vec<u8> {
     let mut found;
-    let mut crafted = ciphertext.to_vec().clone();
+    let mut crafted = ciphertext.to_vec();
     let mut guessed: Vec<u8> = Vec::new();
-    let mut lol = Vec::new();
+    let mut h = Vec::new();
     let len = ciphertext.len();
     let mut pre_xor;
 
     for z in 0..16 {
         found = false;
 
-        while found == false {
-            if crafted[len - 17 - z] < 255 {
-                crafted[len - 17 - z] += 1;
-            } else {
-                crafted[len - 17 - z] = 0;
-            }
-            found = oracle(&crafted);
+        while !found {
+            crafted[len - 17 - z] = crafted[len - 17 - z].wrapping_add(1); // sum modulo 256
+            found = oracle(&crafted); //oracle validates padding
         }
-        pre_xor = ciphers::byte_xor(&[crafted[len - 17 - z]], &[z as u8 + 1])[0];
-        lol.push(pre_xor);
+        pre_xor = crafted[len - 17 - z] ^ (z as u8 + 1);
+        h.push(pre_xor);
 
-        for h in 0..(z + 1) {
-            crafted[len - 17 - h] = ciphers::byte_xor(&[lol[h]], &[z as u8 + 2])[0];
-        }
-        guessed.insert(
-            0,
-            ciphers::byte_xor(&[pre_xor], &[ciphertext[len - 17 - z]])[0],
+        // adjust first block to match padding
+        crafted[len - 17 - z..=len - 17].copy_from_slice(
+            &ciphers::single_byte_xor(&h, z as u8 + 2)
+                .into_iter()
+                .rev()
+                .collect::<Vec<u8>>(),
         );
+
+        guessed.insert(0, pre_xor ^ ciphertext[len - 17 - z]);
     }
     guessed
 }

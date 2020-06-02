@@ -8,7 +8,7 @@ fn main() {
     let guessed_jac = byte_ecb(&secret, crypt_jac, 64);
     let guessed_aes = byte_ecb(&secret, crypt_aes, 16);
     println!(
-        "guessed: {}|{}",
+        "guessed: {}(jac)|{}(aes)",
         String::from_utf8(guessed_jac).unwrap(),
         String::from_utf8(guessed_aes).unwrap()
     );

@@ -5,6 +5,7 @@ fn main() {
     let key_aes = ciphers::random_key(16);
     let iv = ciphers::random_key(16);
     let craft = craft_string(":admin<true:");
+    assert!(!detect_admin(craft_string(";admin=true;").as_bytes()));
     let ciphertext_aes = ciphers::encrypt_aes_ctr(craft.as_bytes(), &key_aes, &iv);
     let ciphertext_jac = ciphers::encrypt_jacopone_ctr(craft.as_bytes(), &key_jac, &iv);
     let flipped_aes = bitflip(&ciphertext_aes);

@@ -4,6 +4,7 @@ fn main() {
     let key = ciphers::random_key(16);
     let iv = ciphers::random_key(16);
     let craft = craft_string(":admin<true:");
+    assert!(!detect_admin(craft_string(";admin=true;").as_bytes()));
     let ciphertext = ciphers::encrypt_aes_cbc(craft.as_bytes(), &key, &iv);
     let flipped = bitflip(&ciphertext);
     assert!(detect_admin(&ciphers::decrypt_aes_cbc(&flipped, &key, &iv)));
